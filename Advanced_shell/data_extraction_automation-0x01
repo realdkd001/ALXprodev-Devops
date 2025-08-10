@@ -4,15 +4,15 @@
 
 JSON_FILE="data.json"
 
-# Extract fields using jq
-name=$(jq -r '.name' "$JSON_FILE" | sed 's/.*/\u&/') # Capitalize first letter
+# Extract raw values
+name=$(jq -r '.name' "$JSON_FILE" | sed 's/.*/\u&/')
 height=$(jq -r '.height' "$JSON_FILE")
 weight=$(jq -r '.weight' "$JSON_FILE")
 type=$(jq -r '.types[0].type.name' "$JSON_FILE" | sed 's/.*/\u&/')
 
-# Convert to meters and kg (height is in decimeters, weight is in hectograms)
-height_m=$(awk -v h="$height" 'BEGIN { printf "%.1f", h / 10 }')
-weight_kg=$(awk -v w="$weight" 'BEGIN { printf "%.0f", w / 10 }')
+# Convert units (decimeters -> meters, hectograms -> kilograms)
+formatted_height=$(awk -v h="$height" 'BEGIN { printf "%.1f", h / 10 }')
+formatted_weight=$(awk -v w="$weight" 'BEGIN { printf "%.0f", w / 10 }')
 
-# Output in the required format
-echo "$name is of type $type, weighs ${weight_kg}kg, and is ${height_m}m tall."
+# Output in the required strict format
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
